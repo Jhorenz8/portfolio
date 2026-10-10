@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogratz - Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { 
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            color: #e8b4b4;
+            line-height: 1.6; 
+            background-image: url('images/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        a { text-decoration: none; color: #e8b4b4; transition: 0.3s; cursor: pointer; }
+        .page { 
+            display: none; 
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            padding-top: 80px;
+            padding-bottom: 70px;
+            position: relative;
+        }
+        .page.active { display: block; }
+
+        /* HEADER */
+        header { 
+            background-color: rgba(34, 34, 34, 0.95); 
+            padding: 15px 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: fixed; 
+            top: 0; 
+            width: 100%; 
+            z-index: 1000; 
+            border-bottom: 1px solid #333;
+            height: 70px;
+        }
+        .logo-wrapper { display: flex; align-items: center; gap: 15px; }
+        .logo-img { height: 40px; width: auto; display: block; }
+        .logo-text { font-size: 1.5rem; font-weight: 700; letter-spacing: 1px; color: #ffffff; }
+        nav ul { list-style: none; display: flex; gap: 30px; }
+        nav ul li a { 
+            font-size: 0.9rem; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            background: none; 
+            border: none; 
+            color: #fff; 
+            font-family: inherit; 
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        nav ul li a:hover, .page-controls button:hover, .btn:hover { 
+            background-color: #ffffff; 
+            color: #1a1a1a; 
+            border-radius: 3px; 
+        }
+        .hamburger { display: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 5px; }
+        .hamburger span { display: block; width: 25px; height: 2px; background-color: #ffffff; transition: 0.3s; }
+
+        /* CONTAINER & TEXT */
+        .container { 
+            max-width: 1600px; 
+            margin: 0 auto; 
+            padding: 0 40px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+        p { color: #e8b4b4; }
+        h2 { 
+            font-size: 3rem; 
+            border-bottom: 2px solid #e8b4b4; 
+            display: inline-block; 
+            padding-bottom: 10px; 
+            margin-bottom: 40px; 
+            color: #e8b4b4; 
+        }
+        h3 { color: #e8b4b4; }
+        .img-placeholder { width: 100%; height: 100%; background-color: #eee; border: 1px solid #ccc; display: flex; justify-content: center; align-items: center; color: #888; font-size: 0.9rem; }
+
+        /* BUTTONS */
+        .page-controls { 
+            position: fixed; 
+            bottom: 20px; 
+            left: 0; 
+            width: 100%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 0 40px; 
+            z-index: 1001; 
+            pointer-events: none; 
+        }
+        .page-controls button { 
+            pointer-events: auto; 
+            background: #1a1a1a; 
+            border: 1px solid #e8b4b4; 
+            color: #e8b4b4; 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            font-size: 1rem; 
+        }
+        .page-controls button:hover { 
+            background-color: #e8b4b4; 
+            color: #1a1a1a; 
+        }
+        .page-controls span { color: #e8b4b4; font-size: 0.9rem; pointer-events: none; }
+
+        .btn { 
+            background-color: #e8b4b4; 
+            color: #1a1a1a; 
+            padding: 15px 30px; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            transition: 0.3s; 
+            display: inline-block; 
+        }
+        .btn:hover { background-color: #d49a9a; }
+
+        /* LAYOUTS */
+        .flex-layout { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            gap: 60px;
+            width: 100%;
+        }
+        .hero-content { flex: 1; }
+        
+        /* PAGE 1 - HERO IMAGE - ZOOMED IN */
+        .hero-img { 
+            flex: 1; 
+            height: 70vh;
+            background-color: #ddd; 
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .hero-img img { 
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block; 
+            transform: scale(1.15);
+            transition: transform 0.3s ease;
+        }
+        .hero-img img:hover { transform: scale(1.2); }
+        
+        .hero-content h1 { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem; 
+            font-weight: 900;
+            margin-bottom: 30px; 
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #e8b4b4 0%, #c48080 50%, #a04a4a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(160, 74, 74, 0.3);
+        }
+        .hero-actions { display: flex; align-items: center; gap: 30px; margin-top: 50px; }
+
+        /* PAGE 2 - INTRODUCTION */
+        .intro-text { flex: 1; }
+        .intro-img { 
+            flex: 1; 
+            height: 60vh; 
+            background-color: #ddd; 
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .intro-img img { 
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block; 
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+        }
+        .intro-img img:hover { transform: scale(1.1); }
+
+        /* PAGE 3 - ABOUT ME */
+        .about-header { margin-bottom: 30px; }
+        .about-images { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 20px; 
+            margin-bottom: 30px; 
+        }
+        .about-images .about-img-box { 
+            height: 30vh; 
+            background-color: #ddd; 
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .about-images .about-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+        }
+        .about-images .about-img-box img:hover { transform: scale(1.15); }
+        .about-columns { display: flex; justify-content: space-between; gap: 50px; }
+        .about-columns > div { flex: 1; }
+        
+        /* About Me bullet lists */
+        .about-columns ul { 
+            list-style: none; 
+            padding: 0; 
+            color: #e8b4b4;
+        }
+        .about-columns ul li { 
+            margin-bottom: 15px; 
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .about-columns ul li strong {
+            color: #ffffff;
+        }
+
+        /* PAGE 4 - PEOPLE (SHOES) */
+        .people-section h2, .people-section h3, .people-section p,
+        .people-section .page-controls span { color: #e8b4b4; }
+        .people-section .page-controls button { 
+            background: #1a1a1a; 
+            border-color: #e8b4b4; 
+            color: #e8b4b4; 
+        }
+        .people-section .page-controls button:hover { 
+            background-color: #e8b4b4; 
+            color: #1a1a1a; 
+        }
+        .people-grid { 
+            display: flex; 
+            flex-direction: row;
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            gap: 30px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding: 20px 0;
+        }
+        .people-grid .image-card { 
+            flex: 0 0 auto;
+            width: 200px; 
+            height: 280px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(232, 180, 180, 0.3);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #e8b4b4;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            text-align: center;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .people-grid .image-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 13px;
+            display: none;
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+        }
+        .people-grid .image-card:hover img { transform: scale(1.15); }
+        .people-grid .image-card .card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            z-index: 1;
+        }
+        .people-grid .image-card .card-content .icon { font-size: 3rem; opacity: 0.8; }
+        .people-grid .image-card .card-content .label { font-size: 1rem; opacity: 0.9; }
+        .people-grid .image-card .card-content .sub-label { font-size: 0.7rem; opacity: 0.6; }
+        .people-grid .image-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(232, 180, 180, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .people-grid .image-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: #e8b4b4;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+        }
+        .people-grid .image-card:hover::before { opacity: 1; }
+        .people-grid .image-card.has-image .card-content { display: none; }
+        .people-grid .image-card.has-image img { display: block; }
+        .people-grid::-webkit-scrollbar { height: 8px; }
+        .people-grid::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        .people-grid::-webkit-scrollbar-thumb { background: rgba(232, 180, 180, 0.4); border-radius: 10px; }
+        .people-grid::-webkit-scrollbar-thumb:hover { background: rgba(232, 180, 180, 0.6); }
+
+        /* LIGHTBOX */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            padding: 40px;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: zoomIn 0.3s ease;
+        }
+        .lightbox .close-btn {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            color: #e8b4b4;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 10000;
+            background: none;
+            border: none;
+        }
+        .lightbox .close-btn:hover { transform: rotate(90deg); color: #ff6b6b; }
+        .lightbox .caption {
+            position: absolute;
+            bottom: 50px;
+            color: #e8b4b4;
+            font-size: 1.2rem;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px 30px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* VIDEO MODAL */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+        .video-modal.active {
+            display: flex;
+        }
+        .video-modal video {
+            max-width: 90%;
+            max-height: 85%;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+            background: #000;
+        }
+        .video-modal .close-video {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            color: #e8b4b4;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: 0.3s;
+            background: none;
+            border: none;
+            z-index: 10001;
+        }
+        .video-modal .close-video:hover {
+            transform: rotate(90deg);
+            color: #ff6b6b;
+        }
+        .video-modal .video-controls {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 30px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+        }
+        .video-modal .video-controls button {
+            background: #e8b4b4;
+            color: #1a1a1a;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .video-modal .video-controls button:hover {
+            background: #ffffff;
+            transform: scale(1.05);
+        }
+        .video-modal .video-controls span {
+            color: #e8b4b4;
+            font-size: 0.9rem;
+        }
+
+        /* PAGE 5 - CONTACT */
+        .contact-layout { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 60px; 
+            align-items: center; 
+            width: 100%;
+        }
+        .contact-img { 
+            height: 70vh; 
+            background-color: #ddd; 
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .contact-img img { 
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block; 
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+        }
+        .contact-img img:hover { transform: scale(1.1); }
+        .contact-info { margin-top: 30px; }
+        .contact-info p { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+            color: #e8b4b4;
+        }
+        .contact-icon { 
+            width: 20px; 
+            height: 20px; 
+            border: 1px solid #e8b4b4; 
+            border-radius: 50%; 
+            display: inline-block; 
+        }
+
+        /* PAGE 6 - THANK YOU */
+        .thank-layout { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 60px; 
+            align-items: center; 
+            width: 100%;
+        }
+        .thank-img { 
+            height: 70vh; 
+            background-color: #ddd; 
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .thank-img img { 
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block; 
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+        }
+        .thank-img img:hover { transform: scale(1.1); }
+        .thank-text p { 
+            margin-bottom: 30px; 
+            color: #e8b4b4;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 992px) {
+            h2 { font-size: 2.5rem; }
+            .hero-content h1 { font-size: 3.5rem; }
+            .hero-img { height: 50vh; }
+            .about-images .about-img-box { height: 20vh; }
+            .contact-img, .thank-img { height: 50vh; }
+            .people-grid .image-card { width: 180px; height: 230px; }
+            .video-modal video { max-width: 95%; max-height: 80%; }
+        }
+        @media (max-width: 768px) {
+            header { padding: 10px 20px; height: 60px; }
+            .logo-img { height: 30px; }
+            .logo-text { font-size: 1rem; }
+            .container { padding: 0 20px; }
+            nav ul { 
+                position: fixed; 
+                top: 60px; 
+                left: 0; 
+                width: 100%; 
+                background-color: #222222; 
+                flex-direction: column; 
+                align-items: center; 
+                padding: 20px 0; 
+                gap: 20px; 
+                display: none; 
+                border-bottom: 1px solid #333; 
+            }
+            nav ul.show { display: flex; }
+            .hamburger { display: flex; }
+            .flex-layout, .about-columns { flex-direction: column; gap: 20px; }
+            .hero-img { height: 30vh; }
+            .intro-img { height: 30vh; }
+            .hero-content h1 { font-size: 2.5rem; letter-spacing: 2px; }
+            .hero-actions { flex-direction: column; align-items: flex-start; gap: 15px; margin-top: 20px; }
+            .hero-actions .btn { width: 100%; text-align: center; }
+            .about-images { grid-template-columns: 1fr; }
+            .about-images .about-img-box { height: 20vh; }
+            .about-columns { gap: 30px; }
+            .about-columns ul li { font-size: 1rem; }
+            .people-grid { gap: 15px; padding: 10px 0; }
+            .people-grid .image-card { width: 140px; height: 180px; font-size: 0.9rem; }
+            .people-grid .image-card .card-content { padding: 15px; }
+            .people-grid .image-card .card-content .icon { font-size: 2rem; }
+            .contact-layout, .thank-layout { grid-template-columns: 1fr; gap: 20px; }
+            .contact-img, .thank-img { height: 30vh; }
+            .page-controls { padding: 0 15px; }
+            .page-controls button { padding: 8px 12px; font-size: 0.8rem; }
+            .page-controls span { font-size: 0.7rem; }
+            .page { padding-top: 60px; padding-bottom: 60px; }
+            .lightbox .close-btn { top: 20px; right: 30px; font-size: 2rem; }
+            .lightbox .caption { font-size: 0.9rem; padding: 10px 20px; bottom: 30px; }
+            .thank-text p { font-size: 1rem; }
+            .video-modal { padding: 20px; }
+            .video-modal video { max-width: 100%; max-height: 70%; }
+            .video-modal .close-video { top: 20px; right: 25px; font-size: 2rem; }
+            .video-modal .video-controls { padding: 12px 20px; flex-wrap: wrap; justify-content: center; bottom: 25px; }
+            .video-modal .video-controls button { padding: 8px 18px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-wrapper">
+        <img src="images/logo.png" alt="Logo" class="logo-img">
+        <span class="logo-text">Jogratz</span>
+    </div>
+    <nav>
+        <ul id="navMenu">
+            <li><a onclick="showPage('home')">Home</a></li>
+            <li><a onclick="showPage('intro')">Photo</a></li>
+            <li><a onclick="showPage('about')">About Me</a></li>
+            <li><a onclick="showPage('contact')">Contact</a></li>
+        </ul>
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </div>
+    </nav>
+</header>
+
+<!-- PAGE 1: HOME -->
+<section id="home" class="page active">
+    <div class="container">
+        <div class="flex-layout">
+            <div class="hero-img">
+                <img src="images/gta.jpg" alt="Hero Image" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'img-placeholder\'>Image Space 1</div>'">
+            </div>
+            <div class="hero-content">
+                <h1>My<br>Portfolio</h1>
+                <p>A student programmer who's trying his best.</p>
+                <div class="hero-actions">
+                    <button class="btn" onclick="playVideo()">PLAY NOW</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-controls">
+        <button onclick="showPage('thanks')">Previous</button>
+        <span>Page | 1</span>
+        <button onclick="showPage('intro')">Next</button>
+    </div>
+</section>
+
+<!-- PAGE 2: INTRODUCTION -->
+<section id="intro" class="page">
+    <div class="container">
+        <div class="flex-layout">
+            <div class="intro-text">
+                <h2>Introduction</h2>
+                <p>My Name is Jhorenz Magtibay, I am currently studying Business Analytics in Batangas State University. Well I'm not good enough at programming or coding but still I'm doing my best to understand and to study it. Yet I was so bad at it at all, but its okay, I have an AI partner.</p>
+            </div>
+            <div class="intro-img">
+                <img src="images/squirtle.jpg" alt="Squirtle" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'img-placeholder\'>Image Space 2</div>'">
+            </div>
+        </div>
+    </div>
+    <div class="page-controls">
+        <button onclick="showPage('home')">Previous</button>
+        <span>Page | 2</span>
+        <button onclick="showPage('about')">Next</button>
+    </div>
+</section>
+
+<!-- PAGE 3: ABOUT ME -->
+<section id="about" class="page">
+    <div class="container">
+        <div style="width: 100%;">
+            <div class="about-header"><h2>About Me</h2></div>
+            <div class="about-images">
+                <div class="about-img-box"><img src="images/piz.jpg" alt="Piz" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'img-placeholder\'>Image Space 3</div>'"></div>
+                <div class="about-img-box"><img src="images/red.jpg" alt="Red" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'img-placeholder\'>Image Space 4</div>'"></div>
+                <div class="about-img-box"><img src="images/white.jpg" alt="White" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'img-placeholder\'>Image Space 5</div>'"></div>
+            </div>
+            <div class="about-columns">
+                <div>
+                    <h3>About Me</h3>
+                    <ul>
+                        <li>I am Jhorenz Magtibay, a Business Analytics student at Batangas State University.</li>
+                        <li>I'm passionate about learning and continuously improving my skills.</li>
+                        <li>Despite challenges in programming, I remain determined and persistent.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>My Hobbies</h3>
+                    <ul>
+                        <li>🎮 Playing Mobile Games</li>
+                        <li>💕 Bonding with Love One's</li>
+                        <li>✈️ Travel</li>
+                        <li>🏍️ Motorcycle</li>
+                        <li>😴 Sleeping</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-controls">
+        <button onclick="showPage('intro')">Previous</button>
+        <span>Page | 3</span>
+        <button onclick="showPage('people')">Next</button>
+    </div>
+</section>
+
+<!-- PAGE 4: PEOPLE (SHOES) -->
+<section id="people" class="page people-section">
+    <div class="container">
+        <div class="people-grid">
+            <div class="image-card has-image" onclick="openLightbox('images/nike1.jpg', 'Nike Air Force 1 Red')">
+                <div class="card-content">
+                    <span class="icon">👤</span>
+                    <span class="label">Shoe 1</span>
+                    <span class="sub-label">Click to view</span>
+                </div>
+                <img src="images/nike1.jpg" alt="Nike Air Force 1 Red">
+            </div>
+            <div class="image-card has-image" onclick="openLightbox('images/nike2.jpg', 'Jordan 1 Bred')">
+                <div class="card-content">
+                    <span class="icon">👤</span>
+                    <span class="label">Shoe 2</span>
+                    <span class="sub-label">Click to view</span>
+                </div>
+                <img src="images/nike2.jpg" alt="Jordan 1 Bred">
+            </div>
+            <div class="image-card has-image" onclick="openLightbox('images/nike3.jpg', 'Nike Dunk Orange')">
+                <div class="card-content">
+                    <span class="icon">👤</span>
+                    <span class="label">Shoe 3</span>
+                    <span class="sub-label">Click to view</span>
+                </div>
+                <img src="images/nike3.jpg" alt="Nike Dunk Orange">
+            </div>
+            <div class="image-card has-image" onclick="openLightbox('images/nike4.jpg', 'Jordan 1 Mocha')">
+                <div class="card-content">
+                    <span class="icon">👤</span>
+                    <span class="label">Shoe 4</span>
+                    <span class="sub-label">Click to view</span>
+                </div>
+                <img src="images/nike4.jpg" alt="Jordan 1 Mocha">
+            </div>
+            <div class="image-card has-image" onclick="openLightbox('images/nike5.jpg', 'Nike Dunk Navy')">
+                <div class="card-content">
+                    <span class="icon">👤</span>
+                    <span class="label">Shoe 5</span>
+                    <span class="sub-label">Click to view</span>
+                </div>
+                <img src="images/nike5.jpg" alt="Nike Dunk Navy">
+            </div>
+        </div>
+    </div>
+    <div class="page-controls">
+        <button onclick="showPage('about')">Previous</button>
+        <span>Page | 4</span>
+        <button onclick="showPage('contact')">Next</button>
+    </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <button class="close-btn" onclick="closeLightbox()">✕</button>
+    <img id="lightboxImage" src="" alt="Image">
+    <div class="caption" id="lightboxCaption"></div>
+</div>
+
+<!-- VIDEO MODAL -->
+<div id="videoModal" class="video-modal" onclick="closeVideo(event)">
+    <button class="close-video" onclick="closeVideo()">✕</button>
+    <video id="videoPlayer" controls onclick="event.stopPropagation()">
+        <source src="images/vid.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="video-controls" onclick="event.stopPropagation()">
+        <button onclick="playPauseVideo()">▶ Play / Pause</button>
+        <button onclick="closeVideo()">✕ Close</button>
+        <span id="videoTime">0:00 / 0:00</span>
+    </div>
+</div>
+
+<!-- PAGE 5: CONTACT -->
+<section id="contact" class="page">
+    <div class="container">
+        <div class="contact-layout">
+            <div class="contact-img">
+                <img src="images/contact.jpg" alt="Contact Image" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'img-placeholder\'>Image Space 8</div>'">
+            </div>
+            <div>
+                <h2>My Contact</h2>
+                <p style="margin-bottom: 30px;">I'm Jhorenz Magtibay, I live in Sto. Nino, Mabini, Batangas. I'm currently 20 years of age and I'm doing good, kind of. I have a lot of hobbies but just visit the page 3 if you are interested.</p>
+                <div class="contact-info">
+                    <p><span class="contact-icon"></span> Sto. Nino, Mabini, Batangas</p>
+                    <p><span class="contact-icon"></span> jhorenzm2@gmail.com</p>
+                    <p><span class="contact-icon"></span> 09703819835</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-controls">
+        <button onclick="showPage('people')">Previous</button>
+        <span>Page | 5</span>
+        <button onclick="showPage('thanks')">Next</button>
+    </div>
+</section>
+
+<!-- PAGE 6: THANK YOU -->
+<section id="thanks" class="page">
+    <div class="container">
+        <div class="thank-layout">
+            <div class="thank-text">
+                <h2>Thank You</h2>
+                <p>I APPRECIATE YOUR TIME GOODBYEE</p>
+            </div>
+            <div class="thank-img">
+                <img src="images/thankyou.jpg" alt="Thank You Image" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'img-placeholder\'>Image Space 9</div>'">
+            </div>
+        </div>
+    </div>
+    <div class="page-controls">
+        <button onclick="showPage('contact')">Previous</button>
+        <span>Page | 6</span>
+        <button onclick="showPage('home')">Next</button>
+    </div>
+</section>
+
+<!-- JAVASCRIPT -->
+<script>
+    function showPage(pageId) {
+        var pages = document.querySelectorAll('.page');
+        pages.forEach(function(page) { page.classList.remove('active'); });
+        var targetPage = document.getElementById(pageId);
+        if (targetPage) targetPage.classList.add('active');
+        document.getElementById("navMenu").classList.remove("show");
+    }
+    
+    function toggleMenu() {
+        var menu = document.getElementById("navMenu");
+        menu.classList.toggle("show");
+    }
+    
+    function openLightbox(imageSrc, caption) {
+        var lightbox = document.getElementById('lightbox');
+        var lightboxImg = document.getElementById('lightboxImage');
+        var lightboxCaption = document.getElementById('lightboxCaption');
+        if (!imageSrc || imageSrc === '') {
+            lightboxImg.style.display = 'none';
+            lightboxCaption.textContent = 'Image not available';
+            lightbox.classList.add('active');
+            return;
+        }
+        lightboxImg.style.display = 'block';
+        lightboxImg.src = imageSrc;
+        lightboxCaption.textContent = caption || 'Image';
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    // VIDEO FUNCTIONS
+    function playVideo() {
+        var modal = document.getElementById('videoModal');
+        var video = document.getElementById('videoPlayer');
+        modal.classList.add('active');
+        video.play();
+        document.body.style.overflow = 'hidden';
+        updateTimeDisplay();
+    }
+    
+    function closeVideo(e) {
+        if (e && e.target !== e.currentTarget) return;
+        var modal = document.getElementById('videoModal');
+        var video = document.getElementById('videoPlayer');
+        modal.classList.remove('active');
+        video.pause();
+        video.currentTime = 0;
+        document.body.style.overflow = '';
+    }
+    
+    function playPauseVideo() {
+        var video = document.getElementById('videoPlayer');
+        if (video.paused) {
+            video.play();
+        } else {
+            video.pause();
+        }
+    }
+    
+    function updateTimeDisplay() {
+        var video = document.getElementById('videoPlayer');
+        var timeDisplay = document.getElementById('videoTime');
+        
+        video.addEventListener('timeupdate', function() {
+            var current = formatTime(video.currentTime);
+            var duration = formatTime(video.duration);
+            timeDisplay.textContent = current + ' / ' + duration;
+        });
+    }
+    
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return '0:00';
+        var mins = Math.floor(seconds / 60);
+        var secs = Math.floor(seconds % 60);
+        return mins + ':' + (secs < 10 ? '0' : '') + secs;
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLightbox();
+            closeVideo();
+        }
+        if (e.key === ' ' || e.key === 'Spacebar') {
+            var modal = document.getElementById('videoModal');
+            if (modal.classList.contains('active')) {
+                e.preventDefault();
+                playPauseVideo();
+            }
+        }
+    });
+    
+    document.getElementById('lightboxImage').addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+</script>
+
+</body>
+</html>
