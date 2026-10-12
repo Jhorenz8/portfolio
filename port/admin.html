@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogratz Store — Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e8b4b4;
+            background-color: #1a1a1a;
+            background-image: linear-gradient(rgba(26,26,26,0.92), rgba(26,26,26,0.92)), url('images/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        a { text-decoration: none; color: #e8b4b4; }
+
+        header {
+            position: sticky; top: 0; z-index: 1000;
+            background-color: rgba(34,34,34,0.97); border-bottom: 1px solid #333;
+            display: flex; align-items: center; justify-content: space-between; padding: 12px 40px;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand img { height: 36px; width: auto; }
+        .brand .title { font-size: 1.3rem; font-weight: 700; color: #fff; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .header-right a { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #fff; }
+        .logout-btn { background: #2a2a2a; color: #e8b4b4; border: 1px solid #444; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        .logout-btn:hover { border-color: #e8b4b4; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px 80px; }
+
+        /* LOGIN */
+        .login-wrap { max-width: 380px; margin: 10vh auto 0; }
+        .login-card { background: #1f1f1f; border: 1px solid #333; border-radius: 14px; padding: 32px; }
+        .login-card h2 { color: #fff; margin-bottom: 20px; text-align: center; }
+        .field { margin-bottom: 14px; }
+        .field label { display: block; font-size: 0.85rem; margin-bottom: 5px; }
+        .field input { width: 100%; background: #2a2a2a; color: #e8b4b4; border: 1px solid #444; border-radius: 6px; padding: 11px; font-size: 0.95rem; }
+        .field input:focus { outline: none; border-color: #e8b4b4; }
+        .login-btn { width: 100%; background: #e8b4b4; color: #1a1a1a; border: none; padding: 13px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1rem; }
+        .login-btn:hover { background: #fff; }
+        .error-text { color: #ff6b6b; font-size: 0.85rem; margin-top: 12px; min-height: 1em; text-align: center; }
+
+        /* DASHBOARD */
+        .dash-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+        .dash-head h1 { color: #fff; font-size: 1.8rem; }
+        .search-input { background: #2a2a2a; color: #e8b4b4; border: 1px solid #444; border-radius: 8px; padding: 11px 14px; font-size: 0.95rem; min-width: 260px; }
+        .search-input:focus { outline: none; border-color: #e8b4b4; }
+
+        .table-wrap { background: #1f1f1f; border: 1px solid #333; border-radius: 12px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 720px; }
+        th, td { text-align: left; padding: 14px 16px; border-bottom: 1px solid #2a2a2a; font-size: 0.9rem; }
+        th { color: #c99696; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        td { color: #e8b4b4; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        .oid { font-family: monospace; font-size: 0.8rem; color: #c99696; }
+        .status-select { background: #2a2a2a; color: #e8b4b4; border: 1px solid #444; border-radius: 6px; padding: 6px 8px; font-size: 0.85rem; cursor: pointer; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .st-Pending { background: #4a3a1a; color: #f0c060; }
+        .st-Processing { background: #1a3a4a; color: #60b0f0; }
+        .st-Shipped { background: #2a1a4a; color: #b080f0; }
+        .st-Delivered { background: #1a4a2a; color: #70e090; }
+        .actions { display: flex; gap: 8px; }
+        .btn { border: 1px solid #444; background: #2a2a2a; color: #e8b4b4; padding: 7px 12px; border-radius: 6px; cursor: pointer; font-size: 0.82rem; transition: 0.3s; }
+        .btn:hover { border-color: #e8b4b4; }
+        .btn.danger { color: #ff6b6b; }
+        .btn.danger:hover { border-color: #ff6b6b; background: #3a1a1a; }
+        .empty { text-align: center; padding: 40px; color: #c99696; }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: #1f1f1f; border: 1px solid #333; border-radius: 14px; width: 560px; max-width: 100%; max-height: 90vh; overflow-y: auto; padding: 28px; }
+        .modal h2 { color: #fff; margin-bottom: 16px; }
+        .detail-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; font-size: 0.9rem; }
+        .detail-row .lbl { color: #c99696; }
+        .detail-row .val { color: #fff; text-align: right; }
+        .items-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+        .items-table th, .items-table td { padding: 8px; font-size: 0.82rem; border-bottom: 1px solid #2a2a2a; }
+        .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+        .btn-primary { flex: 1; background: #e8b4b4; color: #1a1a1a; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-primary:hover { background: #fff; }
+        .mono { font-family: monospace; word-break: break-all; }
+
+        @media (max-width: 600px) {
+            header { padding: 12px 16px; }
+            .search-input { min-width: 100%; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        <img src="images/logo.png" alt="Logo">
+        <span class="title">Jogratz Admin</span>
+    </div>
+    <div class="header-right" id="headerRight" style="display:none;">
+        <a href="ecom.html">Store</a>
+        <a href="index.html">Portfolio</a>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+</header>
+
+<div class="container">
+    <!-- LOGIN -->
+    <div class="login-wrap" id="loginView">
+        <div class="login-card">
+            <h2>Admin Login</h2>
+            <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="admin@example.com"></div>
+            <div class="field"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
+            <button class="login-btn" id="loginBtn" onclick="loginAdmin()">Sign In</button>
+            <div class="error-text" id="loginError"></div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboardView" style="display:none;">
+        <div class="dash-head">
+            <h1>Orders</h1>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search by Order ID or Customer Name..." oninput="searchOrders(this.value)">
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- DETAILS MODAL -->
+<div class="modal-overlay" id="detailsModal">
+    <div class="modal">
+        <h2>Order Details</h2>
+        <div id="detailsContent"></div>
+        <div class="modal-actions">
+            <button class="btn-primary" onclick="closeDetails()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL = window.SUPABASE_URL;
+    const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY;
+    let supabase = null;
+    if (window.isSupabaseConfigured && window.isSupabaseConfigured()) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    let allOrders = [];
+    const STATUSES = ['Pending', 'Processing', 'Shipped', 'Delivered'];
+
+    function fmt(n) { return '$' + Number(n).toFixed(2); }
+    function shortId(id) { return id ? String(id).slice(0, 8) : ''; }
+    function fmtDate(d) {
+        if (!d) return '—';
+        const dt = new Date(d);
+        return dt.toLocaleDateString() + ' ' + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    async function loginAdmin() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const err = document.getElementById('loginError');
+        if (!supabase) {
+            err.textContent = 'Supabase not configured. Add keys in config.js.';
+            return;
+        }
+        if (!email || !password) { err.textContent = 'Enter email and password.'; return; }
+
+        err.textContent = '';
+        const btn = document.getElementById('loginBtn');
+        btn.disabled = true;
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        btn.disabled = false;
+        if (error) { err.textContent = error.message; return; }
+        if (data.session) showDashboard();
+    }
+
+    async function logout() {
+        if (supabase) await supabase.auth.signOut();
+        document.getElementById('loginView').style.display = 'block';
+        document.getElementById('dashboardView').style.display = 'none';
+        document.getElementById('headerRight').style.display = 'none';
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
+    }
+
+    function showDashboard() {
+        document.getElementById('loginView').style.display = 'none';
+        document.getElementById('dashboardView').style.display = 'block';
+        document.getElementById('headerRight').style.display = 'flex';
+        fetchOrders();
+    }
+
+    async function fetchOrders() {
+        const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+        if (error) { console.error(error); return; }
+        allOrders = data || [];
+        displayOrders(allOrders);
+    }
+
+    function displayOrders(orders) {
+        const body = document.getElementById('ordersBody');
+        if (!orders.length) {
+            body.innerHTML = '<tr><td colspan="6" class="empty">No orders found.</td></tr>';
+            return;
+        }
+        body.innerHTML = orders.map(o => `
+            <tr>
+                <td><span class="oid" title="${o.id}">${shortId(o.id)}</span></td>
+                <td>${o.customer_name || ''}</td>
+                <td>${fmt(o.total)}</td>
+                <td>${fmtDate(o.created_at)}</td>
+                <td>
+                    <select class="status-select" onchange="updateOrderStatus('${o.id}', this.value)">
+                        ${STATUSES.map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+                    </select>
+                </td>
+                <td>
+                    <div class="actions">
+                        <button class="btn" onclick="showOrderDetails('${o.id}')">View</button>
+                        <button class="btn danger" onclick="deleteOrder('${o.id}')">Delete</button>
+                    </div>
+                </td>
+            </tr>`).join('');
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+        const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
+        if (error) {
+            alert('Failed to update: ' + error.message);
+            fetchOrders();
+        } else {
+            const o = allOrders.find(x => x.id === orderId);
+            if (o) o.status = newStatus;
+        }
+    }
+
+    async function deleteOrder(orderId) {
+        if (!confirm('Delete this order?')) return;
+        const { error } = await supabase.from('orders').delete().eq('id', orderId);
+        if (error) { alert('Failed to delete: ' + error.message); return; }
+        fetchOrders();
+    }
+
+    function searchOrders(query) {
+        const q = query.trim().toLowerCase();
+        if (!q) { displayOrders(allOrders); return; }
+        const filtered = allOrders.filter(o =>
+            String(o.id).toLowerCase().includes(q) ||
+            (o.customer_name && o.customer_name.toLowerCase().includes(q))
+        );
+        displayOrders(filtered);
+    }
+
+    function showOrderDetails(orderId) {
+        const o = allOrders.find(x => x.id === orderId);
+        if (!o) return;
+        const items = Array.isArray(o.items) ? o.items : [];
+        const itemsRows = items.map(i => `
+            <tr>
+                <td>${i.product_name || '—'}</td>
+                <td>US ${i.size ?? '—'}</td>
+                <td>${i.quantity ?? 0}</td>
+                <td>${fmt(i.price * (i.quantity || 0))}</td>
+            </tr>`).join('');
+        document.getElementById('detailsContent').innerHTML = `
+            <div class="detail-row"><span class="lbl">Order ID</span><span class="val mono">${o.id}</span></div>
+            <div class="detail-row"><span class="lbl">Customer</span><span class="val">${o.customer_name}</span></div>
+            <div class="detail-row"><span class="lbl">Email</span><span class="val">${o.email}</span></div>
+            <div class="detail-row"><span class="lbl">Phone</span><span class="val">${o.phone || '—'}</span></div>
+            <div class="detail-row"><span class="lbl">Address</span><span class="val">${o.address || '—'}</span></div>
+            <div class="detail-row"><span class="lbl">Status</span><span class="val">${o.status}</span></div>
+            <div class="detail-row"><span class="lbl">Total</span><span class="val">${fmt(o.total)}</span></div>
+            <table class="items-table">
+                <thead><tr><th>Item</th><th>Size</th><th>Qty</th><th>Subtotal</th></tr></thead>
+                <tbody>${itemsRows || '<tr><td colspan="4">No items</td></tr>'}</tbody>
+            </table>`;
+        document.getElementById('detailsModal').classList.add('open');
+    }
+    function closeDetails() { document.getElementById('detailsModal').classList.remove('open'); }
+
+    (async function init() {
+        if (!supabase) {
+            document.getElementById('loginError').textContent = 'Supabase not configured. Add keys in config.js.';
+            return;
+        }
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) showDashboard();
+    })();
+</script>
+</body>
+</html>
