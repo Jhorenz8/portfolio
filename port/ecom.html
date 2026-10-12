@@ -80,6 +80,22 @@
         }
         .add-btn:hover { background: #fff; }
 
+        /* SKELETON LOADER */
+        .sk-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(232,180,180,0.15); border-radius: 14px; overflow: hidden; }
+        .sk-card .sk-img { height: 190px; background: #242424; }
+        .sk-card .sk-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .sk-line { height: 13px; border-radius: 6px; background: #242424; }
+        .sk-line.w80 { width: 80%; }
+        .sk-line.w60 { width: 60%; }
+        .sk-line.w40 { width: 40%; }
+        .sk-img, .sk-line { position: relative; overflow: hidden; }
+        .sk-img::after, .sk-line::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.09), transparent);
+            animation: shimmer 1.4s infinite;
+        }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
         /* CART PANEL */
         .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; opacity: 0; visibility: hidden; transition: 0.3s; }
         .cart-overlay.open { opacity: 1; visibility: visible; }
@@ -140,6 +156,7 @@
             .page-title { font-size: 1.7rem; }
             .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
             .card-img { height: 140px; }
+            .sk-card .sk-img { height: 140px; }
         }
     </style>
 </head>
@@ -160,7 +177,14 @@
     <h1 class="page-title">Nike Shoes</h1>
     <p class="page-sub">Fresh kicks, straight to your door.</p>
     <div id="notice" class="notice" style="display:none;"></div>
-    <div class="grid" id="productGrid"></div>
+    <div class="grid" id="productGrid">
+        <div class="sk-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w80"></div><div class="sk-line w60"></div><div class="sk-line w40"></div></div></div>
+        <div class="sk-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w80"></div><div class="sk-line w60"></div><div class="sk-line w40"></div></div></div>
+        <div class="sk-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w80"></div><div class="sk-line w60"></div><div class="sk-line w40"></div></div></div>
+        <div class="sk-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w80"></div><div class="sk-line w60"></div><div class="sk-line w40"></div></div></div>
+        <div class="sk-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w80"></div><div class="sk-line w60"></div><div class="sk-line w40"></div></div></div>
+        <div class="sk-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w80"></div><div class="sk-line w60"></div><div class="sk-line w40"></div></div></div>
+    </div>
 </div>
 
 <!-- CART PANEL -->
@@ -213,6 +237,7 @@
 </div>
 
 <script src="config.js"></script>
+<script src="products-data.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
     const SUPABASE_URL = window.SUPABASE_URL;
@@ -242,9 +267,18 @@
 
     async function fetchProducts() {
         const grid = document.getElementById('productGrid');
+        const notice = document.getElementById('notice');
+
+        // Skeleton cards already in HTML — hold min 400ms so shimmer reads, no flash
+        const minDelay = new Promise(r => setTimeout(r, 400));
+
         if (sb) {
             try {
-                const { data, error } = await sb.from('products').select('*').order('price', { ascending: true });
+                const [res] = await Promise.all([
+                    sb.from('products').select('*').order('price', { ascending: true }),
+                    minDelay
+                ]);
+                const { data, error } = res;
                 if (!error && data && data.length) {
                     products = data;
                     renderProducts();
@@ -254,9 +288,19 @@
                 console.error('Failed to load products from Supabase:', e);
             }
         }
+
+        // Offline fallback: preloaded static data
+        const preloaded = window.PRELOADED_PRODUCTS;
+        if (preloaded && preloaded.length) {
+            products = preloaded;
+            renderProducts();
+            notice.style.display = 'none';
+            return;
+        }
+
+        // Nothing available — fallback samples
         products = FALLBACK_PRODUCTS;
         renderProducts();
-        const notice = document.getElementById('notice');
         notice.style.display = 'block';
         notice.textContent = 'Showing sample products. Add your Supabase keys in config.js to load live data.';
     }
